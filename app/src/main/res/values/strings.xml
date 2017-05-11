@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Movie Listings</string>
+    <string name="enter_title_button">Enter Title</string>
+    <string name="view_button">View</string>
+    <string name="store_button">Store</string>
+    <string name="load_button">Load</string>
+    <string name="exit_button">Exit</string>
+    <string name="movie_title_hint">Enter the movie\'s title</string>
+    <string name="actor_name_hint">Enter the name of an actor</string>
+    <string name="enter_year">Enter movie release year</string>
 </resources>
