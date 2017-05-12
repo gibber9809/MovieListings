@@ -3,7 +3,6 @@ package com.example.movielistings;
 
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,8 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 public class MainMenuFragment extends Fragment {
+    public static final String MAIN_MENU_TAG = "MAIN_MENU_TAG";
     private mainMenuListener mParentContext = null;
 
+    public interface mainMenuListener {
+        void setFragmentEnterFromMenu();
+    }
 
     public MainMenuFragment() {
         // Required empty public constructor
@@ -46,18 +49,11 @@ public class MainMenuFragment extends Fragment {
         }
     }
 
-    public interface mainMenuListener {
-        //TODO
-    }
-
     public View.OnClickListener generateEnterTitleListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentTransaction manager = getFragmentManager().beginTransaction();
-                manager.replace(R.id.main_menu, new EnterTitleFragment());
-                manager.addToBackStack(null);
-                manager.commit();
+                mParentContext.setFragmentEnterFromMenu();
             }
         };
     }

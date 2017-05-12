@@ -8,4 +8,6 @@
     <string name="movie_title_hint">Enter the movie\'s title</string>
     <string name="actor_name_hint">Enter the name of an actor</string>
     <string name="enter_year">Enter movie release year</string>
+    <string name="add_movie_button">Add Movie</string>
+    <string name="done_adding_button">Done</string>
 </resources>
