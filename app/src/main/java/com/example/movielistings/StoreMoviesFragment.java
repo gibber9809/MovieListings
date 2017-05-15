@@ -55,10 +55,12 @@ public class StoreMoviesFragment extends Fragment {
         return mFileNameEdit;
     }
 
+    //If a filename has been typed, saves into that filename and returns to main menu, unless any
+    //exceptions are thrown in the writing process.
     public View.OnClickListener getSubmitListener() {
         return new View.OnClickListener() {
             public void onClick(View v) {
-                if (getFileNameEdit().getText().toString().length() == 0) { //perhaps use toasts
+                if (getFileNameEdit().getText().toString().length() == 0) {
                     getFileNameEdit().requestFocus();
                 } else {
                     if (!mParentListener.returnAndSaveMovies(getFileNameEdit().getText().toString())) {

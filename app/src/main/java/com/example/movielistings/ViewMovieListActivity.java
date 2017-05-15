@@ -39,6 +39,8 @@ public class ViewMovieListActivity extends AppCompatActivity {
         movieList.setAdapter(adapter);
     }
 
+    //Reads the movie list data from a file, and packages it so that it can be used
+    //by a SimpleAdapter
     private ArrayList< ArrayMap<String, String> > getData(String filename) {
         BufferedReader in = null;
         ArrayList< ArrayMap<String, String> > movieDataList = new ArrayList< ArrayMap<String, String> >();

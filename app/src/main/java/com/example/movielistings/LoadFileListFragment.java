@@ -43,6 +43,7 @@ public class LoadFileListFragment extends ListFragment {
         View parentView = inflater.inflate(R.layout.fragment_load_movie_list, container, false);
         parentView.findViewById(R.id.done_selecting_button).setOnClickListener(getDoneOnClickListener());
 
+        //Create and set list adapter for the listview based on and array of filenames
         mFileList = mParentContext.fileList();
         setListAdapter(new ArrayAdapter<String>(mParentContext,
                 android.R.layout.simple_list_item_1, mFileList));
@@ -50,6 +51,7 @@ public class LoadFileListFragment extends ListFragment {
         return parentView;
     }
 
+    //Gets parent context, and makes sure that it has implemented all listener methods
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -73,6 +75,8 @@ public class LoadFileListFragment extends ListFragment {
         mSelectedIndex = position;
 
     }
+
+    //Submits the name of the file to load, if one has been selected
     private View.OnClickListener getDoneOnClickListener() {
         return new View.OnClickListener() {
             public void onClick(View v) {

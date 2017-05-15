@@ -43,6 +43,8 @@ public class MainMenuFragment extends Fragment {
         return fragmentView;
     }
 
+
+    //Here we store the parent context, and make sure it has implemented all of our listeners
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -53,6 +55,11 @@ public class MainMenuFragment extends Fragment {
         }
     }
 
+    /*
+     * All of these methods generate onClickListeners that call methods in MainActivity on clicks
+     * In this implementation the main activity will ignore these calls when they are invalid
+     * e.g. trying to store a movie list when no movies have been addd to it
+     */
     public View.OnClickListener generateEnterTitleListener() {
         return new View.OnClickListener() {
             @Override

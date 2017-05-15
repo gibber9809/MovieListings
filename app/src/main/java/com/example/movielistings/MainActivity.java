@@ -11,7 +11,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
-
+/*
+ * Class handles all of the different fragments that are swapped between dynamically.
+ * The class by default launches the main menu, which allows users to navigate to other fragments,
+ * (or the one other Activity).
+ */
 public class MainActivity extends AppCompatActivity implements
         MainMenuFragment.mainMenuListener,
         EnterTitleFragment.enterTitleListener,
@@ -37,7 +41,8 @@ public class MainActivity extends AppCompatActivity implements
             mStore = savedInstanceState.getBoolean(BSTORE_KEY);
         }
 
-        //TODO generalize this
+        //This block rigidly controls which fragment is created, and makes sure that no fragments
+        //get recreated unnecessarily
         if (mMenu && getFragmentManager().findFragmentByTag(MainMenuFragment.MAIN_MENU_TAG) == null) {
             getFragmentManager().beginTransaction()
                     .add(android.R.id.content, new MainMenuFragment(), MainMenuFragment.MAIN_MENU_TAG)
@@ -72,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements
         super.onSaveInstanceState(outState);
     }
 
+
+    //All of the fragment switching methods guarantee that the fragment isn't recreated
     @Override
     public void setFragmentEnterFromMenu() {
         mEnter = true;
@@ -94,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void setFragmentStoreFromMenu() {
+        //Only executes if we have a movieList to store
         if (mMovieList != null) {
             mStore = true;
             mMenu = false;
@@ -112,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements
                 manager.commit();
             }
         }
-        //Perhaps add a toast otherwise
     }
 
     @Override
@@ -136,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void startActivityViewMovieList() {
+        //Only starts if a file has been selected
         if (mFileSelected != null) {
             Intent intent = new Intent(this, ViewMovieListActivity.class);
             intent.putExtra(ViewMovieListActivity.FILENAME_KEY, mFileSelected);
@@ -143,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-
+    //Brings the screen back to the main menu
     @Override
     public void onBackPressed() {
         mMenu = true;
@@ -172,7 +180,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     //Attempts to store movies in user provided filename, if
-    //successful returns to main menu fragment
+    //successful returns to main menu fragment, and deletes the
+    //movieList that was in progress (because it has been stored)
     @Override
     public boolean returnAndSaveMovies(String filename) {
         if (writeMovies(filename)) {

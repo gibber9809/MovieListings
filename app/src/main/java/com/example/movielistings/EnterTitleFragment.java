@@ -58,7 +58,7 @@ public class EnterTitleFragment extends Fragment {
 
         //Pass array of years into spinner
         mYearSpinner = (Spinner) fragmentView.findViewById(R.id.select_year_spinner);
-        mYearSpinner.setAdapter(new ArrayAdapter(mParentContext,R.layout.adapter_textview, mYears));
+        mYearSpinner.setAdapter(new ArrayAdapter<Integer>(mParentContext,R.layout.adapter_textview, mYears));
 
         //Set up callbacks for buttons
         fragmentView.findViewById(R.id.add_button).setOnClickListener(getAddOnClickListener());
@@ -67,6 +67,7 @@ public class EnterTitleFragment extends Fragment {
         return fragmentView;
     }
 
+    //Make sure that parent context has implemented listener methods
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -99,6 +100,8 @@ public class EnterTitleFragment extends Fragment {
         return mYearSpinner;
     }
 
+    //Adds a movie to a movie list, if all information has been entered correctly
+    //Resets all of the fields when this happens
     private View.OnClickListener getAddOnClickListener() {
         return new View.OnClickListener() {
             @Override
@@ -117,6 +120,7 @@ public class EnterTitleFragment extends Fragment {
 
                     getMovieEdit().setText("");
                     getActorEdit().setText("");
+                    getYearSpinner().setSelection(0);
                 }
             }
         };
