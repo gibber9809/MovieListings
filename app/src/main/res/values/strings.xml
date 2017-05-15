@@ -10,4 +10,8 @@
     <string name="enter_year">Enter movie release year</string>
     <string name="add_movie_button">Add Movie</string>
     <string name="done_adding_button">Done</string>
+    <string name="save_button">Save</string>
+    <string name="enter_filename_prompt">Enter the filename for your movie list</string>
+    <string name="filename_hint">filename</string>
+    <string name="empty_filelist">No files yet</string>
 </resources>

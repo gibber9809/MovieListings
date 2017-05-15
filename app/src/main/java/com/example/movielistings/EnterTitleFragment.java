@@ -13,14 +13,16 @@ import android.widget.Spinner;
 
 import java.util.ArrayList;
 
-
+/**
+ * Fragment that allows the user to enter data about movies for their list
+ */
 public class EnterTitleFragment extends Fragment {
     public static final String ENTER_TITLE_TAG = "ENTER_TITLE_TAG";
     public static final int CURRENT_YEAR = 2017;
     public static final int FIRST_YEAR = 1900;
     private Context mParentContext = null;
     private enterTitleListener mListener = null;
-    private ArrayList mYears;
+    private ArrayList<Integer> mYears;
 
     private EditText mMovieEdit = null;
     private EditText mActorEdit = null;
@@ -29,6 +31,7 @@ public class EnterTitleFragment extends Fragment {
 
     public interface enterTitleListener {
         void setFragmentMenuFromEnter();
+        void addMovieToList(String[] movieData);
     }
 
     public EnterTitleFragment() {
@@ -40,7 +43,7 @@ public class EnterTitleFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mYears = new ArrayList();
+        mYears = new ArrayList<Integer>();
         for (int i = FIRST_YEAR; i <= CURRENT_YEAR; i++ ) {
             mYears.add(i);
         }
@@ -56,7 +59,6 @@ public class EnterTitleFragment extends Fragment {
         //Pass array of years into spinner
         mYearSpinner = (Spinner) fragmentView.findViewById(R.id.select_year_spinner);
         mYearSpinner.setAdapter(new ArrayAdapter(mParentContext,R.layout.adapter_textview, mYears));
-        //yearSpinner.getSelectedItem();
 
         //Set up callbacks for buttons
         fragmentView.findViewById(R.id.add_button).setOnClickListener(getAddOnClickListener());
@@ -101,10 +103,21 @@ public class EnterTitleFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //First add movie to some data structure
-                //getYearSpinner().getSelectedItem()
-                getMovieEdit().setText("");
-                getActorEdit().setText("");
+                String[] movieData = new String[3];
+                movieData[0] = getMovieEdit().getText().toString();
+                movieData[1] = getActorEdit().getText().toString();
+                movieData[2] = getYearSpinner().getSelectedItem().toString();
+
+                if (movieData[0].length() == 0) {
+                    getMovieEdit().requestFocus();
+                } else if (movieData[1].length() == 0) {
+                    getActorEdit().requestFocus();
+                } else {
+                    mListener.addMovieToList(movieData);
+
+                    getMovieEdit().setText("");
+                    getActorEdit().setText("");
+                }
             }
         };
     }

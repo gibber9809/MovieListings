@@ -11,10 +11,14 @@ import android.view.ViewGroup;
 
 public class MainMenuFragment extends Fragment {
     public static final String MAIN_MENU_TAG = "MAIN_MENU_TAG";
-    private mainMenuListener mParentContext = null;
+    private mainMenuListener mParentListener = null;
 
     public interface mainMenuListener {
         void setFragmentEnterFromMenu();
+        void setFragmentStoreFromMenu();
+        void setFragmentLoadFromMenu();
+        void startActivityViewMovieList();
+        void exitApplication();
     }
 
     public MainMenuFragment() {
@@ -43,7 +47,7 @@ public class MainMenuFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mParentContext = (mainMenuListener) context;
+            mParentListener = (mainMenuListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement mainMenuListener");
         }
@@ -53,7 +57,7 @@ public class MainMenuFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mParentContext.setFragmentEnterFromMenu();
+                mParentListener.setFragmentEnterFromMenu();
             }
         };
     }
@@ -62,7 +66,7 @@ public class MainMenuFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
+                mParentListener.startActivityViewMovieList();
             }
         };
     }
@@ -71,7 +75,7 @@ public class MainMenuFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
+                mParentListener.setFragmentStoreFromMenu();
             }
         };
     }
@@ -80,7 +84,7 @@ public class MainMenuFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
+                mParentListener.setFragmentLoadFromMenu();
             }
         };
     }
@@ -89,7 +93,7 @@ public class MainMenuFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
+                mParentListener.exitApplication();
             }
         };
     }

@@ -1,0 +1,4 @@
+This app was created to learn more about Android. It allows users to create and store lists of movies,
+along with an actor, and the year it was made. The user chooses the filename where the list is stored.
+The user can then choose which movie list to load, from a list of all of the filenames, and view that
+list of movies in a scrollable view. 
