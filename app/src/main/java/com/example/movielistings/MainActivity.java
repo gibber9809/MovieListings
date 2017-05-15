@@ -144,7 +144,9 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void startActivityViewMovieList() {
         //Only starts if a file has been selected
-        if (mFileSelected != null) {
+        if (mMovieList != null) {
+            setFragmentStoreFromMenu();
+        } else if (mFileSelected != null) {
             Intent intent = new Intent(this, ViewMovieListActivity.class);
             intent.putExtra(ViewMovieListActivity.FILENAME_KEY, mFileSelected);
             startActivity(intent);
