@@ -25,7 +25,7 @@ public class LoadFileListFragment extends ListFragment {
 
 
     public interface LoadFileListFragmentListener {
-        void setSelectedFile(String filename);
+        void stopLoadFileListFragment(String filename);
     }
 
     public LoadFileListFragment() {
@@ -51,15 +51,15 @@ public class LoadFileListFragment extends ListFragment {
         return parentView;
     }
 
-    //Gets parent context, and makes sure that it has implemented all listener methods
+    /**
+     * Gets parent context, and makes sure that it has implemented all listener methods
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        try{
+        if (context instanceof LoadFileListFragmentListener) {
             mParentListener = (LoadFileListFragmentListener) context;
-        }catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement LoadFileListFragmentListener");
         }
         mParentContext = context;
     }
@@ -76,14 +76,16 @@ public class LoadFileListFragment extends ListFragment {
 
     }
 
-    //Submits the name of the file to load, if one has been selected
+    /**
+     * Submits the name of the file to load, if a file has been selected
+     */
     private View.OnClickListener getDoneOnClickListener() {
         return new View.OnClickListener() {
             public void onClick(View v) {
                 if (mSelectedIndex >= 0) {
-                    mParentListener.setSelectedFile(mFileList[mSelectedIndex]);
+                    mParentListener.stopLoadFileListFragment(mFileList[mSelectedIndex]);
                 } else {
-                    mParentListener.setSelectedFile(null);
+                    mParentListener.stopLoadFileListFragment(null);
                 }
             }
         };

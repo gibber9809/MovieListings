@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
-/*
+/**
  * Class handles all of the different fragments that are swapped between dynamically.
  * The class by default launches the main menu, which allows users to navigate to other fragments,
  * (or the one other Activity).
@@ -27,6 +27,16 @@ public class MainActivity extends AppCompatActivity implements
     private ArrayList<String> mMovieList = null;
     private String mFileSelected = null;
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,28 +51,15 @@ public class MainActivity extends AppCompatActivity implements
             mStore = savedInstanceState.getBoolean(BSTORE_KEY);
         }
 
-        //This block rigidly controls which fragment is created, and makes sure that no fragments
-        //get recreated unnecessarily
-        if (mMenu && getFragmentManager().findFragmentByTag(MainMenuFragment.MAIN_MENU_TAG) == null) {
-            getFragmentManager().beginTransaction()
-                    .add(android.R.id.content, new MainMenuFragment(), MainMenuFragment.MAIN_MENU_TAG)
-                    .commit();
-        } else if (mEnter && getFragmentManager().findFragmentByTag(EnterTitleFragment.ENTER_TITLE_TAG) == null) {
-            getFragmentManager().beginTransaction()
-                    .add(android.R.id.content, new EnterTitleFragment(), EnterTitleFragment.ENTER_TITLE_TAG)
-                    .addToBackStack(null)
-                    .commit();
-        } else if (mStore && getFragmentManager().findFragmentByTag(StoreMoviesFragment.STORE_MOVIES_TAG) == null) {
-            getFragmentManager().beginTransaction()
-                    .add(android.R.id.content, new StoreMoviesFragment(), StoreMoviesFragment.STORE_MOVIES_TAG)
-                    .addToBackStack(null)
-                    .commit();
-        } else if (mLoad && getFragmentManager().findFragmentByTag(LoadFileListFragment.LOAD_MOVIE_TAG) == null) {
-            getFragmentManager().beginTransaction()
-                    .add(android.R.id.content, new LoadFileListFragment(), LoadFileListFragment.LOAD_MOVIE_TAG)
-                    .addToBackStack(null)
-                    .commit();
-        }
+        //control which fragment is displayed
+        if (mMenu)
+            showMainMenuFragment();
+        else if (mEnter)
+            showEnterTitleFragment(false);
+        else if (mStore)
+            showStoreMoviesFragment(false);
+        else if (mLoad)
+            showLoadFileListFragment(false);
     }
 
     @Override
@@ -77,127 +74,99 @@ public class MainActivity extends AppCompatActivity implements
         super.onSaveInstanceState(outState);
     }
 
-
-    //All of the fragment switching methods guarantee that the fragment isn't recreated
     @Override
-    public void setFragmentEnterFromMenu() {
+    public void startEnterTitleFragment() {
         mEnter = true;
         mMenu = false;
 
-        if (getFragmentManager().findFragmentByTag(EnterTitleFragment.ENTER_TITLE_TAG) == null) {
-            FragmentTransaction manager = getFragmentManager().beginTransaction();
-            manager.replace(android.R.id.content, new EnterTitleFragment(), EnterTitleFragment.ENTER_TITLE_TAG);
-            manager.addToBackStack(null);
-            manager.commit();
-        } else {
-            FragmentTransaction manager = getFragmentManager().beginTransaction();
-            manager.replace(android.R.id.content,
-                    getFragmentManager().findFragmentByTag(EnterTitleFragment.ENTER_TITLE_TAG));
-            manager.addToBackStack(null);
-            manager.commit();
-
-        }
+        showEnterTitleFragment(true);
     }
 
     @Override
-    public void setFragmentStoreFromMenu() {
+    public void startStoreMoviesFragment() {
         //Only executes if we have a movieList to store
         if (mMovieList != null) {
             mStore = true;
             mMenu = false;
 
-            if (getFragmentManager().findFragmentByTag(StoreMoviesFragment.STORE_MOVIES_TAG) == null) {
-                FragmentTransaction manager = getFragmentManager().beginTransaction();
-                manager.replace(android.R.id.content,
-                        new StoreMoviesFragment(), StoreMoviesFragment.STORE_MOVIES_TAG);
-                manager.addToBackStack(null);
-                manager.commit();
-            } else {
-                FragmentTransaction manager = getFragmentManager().beginTransaction();
-                manager.replace(android.R.id.content,
-                        getFragmentManager().findFragmentByTag(StoreMoviesFragment.STORE_MOVIES_TAG));
-                manager.addToBackStack(null);
-                manager.commit();
-            }
+            showStoreMoviesFragment(true);
         }
     }
 
     @Override
-    public void setFragmentLoadFromMenu() {
+    public void startLoadFileListFragment() {
         mLoad = true;
         mMenu = false;
 
-        if (getFragmentManager().findFragmentByTag(LoadFileListFragment.LOAD_MOVIE_TAG) == null) {
-            FragmentTransaction manager = getFragmentManager().beginTransaction();
-            manager.replace(android.R.id.content, new LoadFileListFragment(), LoadFileListFragment.LOAD_MOVIE_TAG);
-            manager.addToBackStack(null);
-            manager.commit();
-        } else {
-            FragmentTransaction manager = getFragmentManager().beginTransaction();
-            manager.replace(android.R.id.content,
-                    getFragmentManager().findFragmentByTag(LoadFileListFragment.LOAD_MOVIE_TAG));
-            manager.addToBackStack(null);
-            manager.commit();
-        }
+        showLoadFileListFragment(true);
     }
 
     @Override
-    public void startActivityViewMovieList() {
-        //Only starts if a file has been selected
-        if (mMovieList != null) {
-            setFragmentStoreFromMenu();
-        } else if (mFileSelected != null) {
+    public void startViewMovieListActivity() {
+        //only start if a file has been selected
+        if (mFileSelected != null) {
             Intent intent = new Intent(this, ViewMovieListActivity.class);
             intent.putExtra(ViewMovieListActivity.FILENAME_KEY, mFileSelected);
             startActivity(intent);
         }
     }
 
-    //Brings the screen back to the main menu
+    /**
+     * Ensures that the user can return to the main menu with a back press, without
+     * breaking any boolean flags
+     */
     @Override
     public void onBackPressed() {
-        mMenu = true;
-        mStore = false;
-        mEnter = false;
-        mLoad = false;
+        resetBooleanFragmentFlags();
 
         super.onBackPressed();
     }
 
     @Override
-    public void setFragmentMenuFromEnter() {
-        onBackPressed();
+    public void stopEnterTitleFragment() {
+        resetBooleanFragmentFlags();
+        getFragmentManager().popBackStack();
+        showMainMenuFragment();
     }
 
-    //Adds another movie to list
-    //String array is in order Movie Title, Actor Name, Year Made
+    /**
+     * Adds another movie to list
+     * String array is in order Movie Title, Actor Name, Year Made
+     */
     @Override
     public void addMovieToList(String[] movieData) {
         if (mMovieList == null) {
             mMovieList = new ArrayList<String>();
         }
+
         for (int i = 0; i < 3; i++) {
             mMovieList.add(movieData[i]);
         }
     }
 
-    //Attempts to store movies in user provided filename, if
-    //successful returns to main menu fragment, and deletes the
-    //movieList that was in progress (because it has been stored)
+    /**
+     * Attempts to store movies in user provided filename, if
+     * successful returns to main menu fragment, and deletes the
+     * movieList that was in progress (because it has been stored)
+     */
     @Override
-    public boolean returnAndSaveMovies(String filename) {
+    public boolean stopStoreMoviesFragmentAndSaveMovies(String filename) {
         if (writeMovies(filename)) {
-            onBackPressed();
+            resetBooleanFragmentFlags();
+            getFragmentManager().popBackStack();
+            showMainMenuFragment();
             return true;
         }
         return false;
     }
 
     @Override
-    public void setSelectedFile(String filename) {
+    public void stopLoadFileListFragment(String filename) {
         if (filename != null)
             mFileSelected = filename;
-        onBackPressed();
+        resetBooleanFragmentFlags();
+        getFragmentManager().popBackStack();
+        showMainMenuFragment();
     }
 
     @Override
@@ -205,13 +174,111 @@ public class MainActivity extends AppCompatActivity implements
         if (mMovieList == null) {
             finish();
         } else {
-            setFragmentStoreFromMenu();
+            startStoreMoviesFragment();
         }
     }
 
-    //Attempts to write current movie data into a user provided filename
-    //Using the scheme of Movie Title (newline) Actor Name (newline) Movie Year (newline)
-    //Returns false if it fails for any reason, true otherwise
+    private void resetBooleanFragmentFlags() {
+        mMenu = true;
+        mLoad = false;
+        mEnter = false;
+        mStore = false;
+    }
+
+    private void showMainMenuFragment() {
+        MainMenuFragment fragmentToTransact = null;
+        if (getFragmentManager().findFragmentByTag(MainMenuFragment.MAIN_MENU_TAG) == null) {
+            fragmentToTransact = new MainMenuFragment();
+        } else if (getFragmentManager().findFragmentByTag(MainMenuFragment.MAIN_MENU_TAG).isHidden()) {
+            fragmentToTransact =(MainMenuFragment) getFragmentManager()
+                    .findFragmentByTag(MainMenuFragment.MAIN_MENU_TAG);
+        } else {
+            return;
+        }
+
+        getFragmentManager().beginTransaction()
+                .add(android.R.id.content,
+                        fragmentToTransact, MainMenuFragment.MAIN_MENU_TAG)
+                .commit();
+    }
+
+    private void showEnterTitleFragment(boolean replace) {
+        EnterTitleFragment fragmentToTransact = null;
+        if (getFragmentManager().findFragmentByTag(EnterTitleFragment.ENTER_TITLE_TAG) == null) {
+            fragmentToTransact = new EnterTitleFragment();
+        } else if (getFragmentManager().findFragmentByTag(EnterTitleFragment.ENTER_TITLE_TAG).isHidden()) {
+            fragmentToTransact = (EnterTitleFragment) getFragmentManager()
+                    .findFragmentByTag(EnterTitleFragment.ENTER_TITLE_TAG);
+        } else {
+            return;
+        }
+
+        FragmentTransaction manager = getFragmentManager().beginTransaction();
+
+        if (replace) {
+            manager.replace(android.R.id.content,
+                    fragmentToTransact, EnterTitleFragment.ENTER_TITLE_TAG);
+        } else {
+            manager.add(android.R.id.content,
+                    fragmentToTransact, EnterTitleFragment.ENTER_TITLE_TAG);
+        }
+        manager.addToBackStack(null);
+        manager.commit();
+    }
+
+    private void showLoadFileListFragment(boolean replace) {
+        LoadFileListFragment fragmentToTransact = null;
+        if (getFragmentManager().findFragmentByTag(LoadFileListFragment.LOAD_MOVIE_TAG) == null) {
+            fragmentToTransact = new LoadFileListFragment();
+        } else if (getFragmentManager().findFragmentByTag(LoadFileListFragment.LOAD_MOVIE_TAG).isHidden()) {
+            fragmentToTransact =(LoadFileListFragment) getFragmentManager()
+                    .findFragmentByTag(LoadFileListFragment.LOAD_MOVIE_TAG);
+        } else {
+            return;
+        }
+
+        FragmentTransaction manager = getFragmentManager().beginTransaction();
+
+        if (replace) {
+            manager.replace(android.R.id.content,
+                    fragmentToTransact, LoadFileListFragment.LOAD_MOVIE_TAG);
+        } else {
+            manager.add(android.R.id.content,
+                    fragmentToTransact, LoadFileListFragment.LOAD_MOVIE_TAG);
+        }
+        manager.addToBackStack(null);
+        manager.commit();
+    }
+
+    private void showStoreMoviesFragment(boolean replace) {
+        StoreMoviesFragment fragmentToTransact = null;
+        if (getFragmentManager().findFragmentByTag(StoreMoviesFragment.STORE_MOVIES_TAG) == null) {
+            fragmentToTransact = new StoreMoviesFragment();
+        } else if (getFragmentManager().findFragmentByTag(StoreMoviesFragment.STORE_MOVIES_TAG).isHidden()) {
+            fragmentToTransact = (StoreMoviesFragment) getFragmentManager()
+                    .findFragmentByTag(StoreMoviesFragment.STORE_MOVIES_TAG);
+        } else {
+            return;
+        }
+
+        FragmentTransaction manager = getFragmentManager().beginTransaction();
+
+        if (replace) {
+            manager.replace(android.R.id.content,
+                    fragmentToTransact, StoreMoviesFragment.STORE_MOVIES_TAG);
+        } else {
+            manager.add(android.R.id.content,
+                    fragmentToTransact, StoreMoviesFragment.STORE_MOVIES_TAG);
+        }
+        manager.addToBackStack(null);
+        manager.commit();
+    }
+
+    /**
+     * Attempts to write current movie data into a user provided filename
+     * Using the scheme of Movie Title (newline) Actor Name (newline) Movie Year (newline)
+     * Returns false if it fails for any reason, true otherwise
+     */
     private boolean writeMovies(String filename) {
         String[] files = fileList();
         OutputStreamWriter movieFileWriter = null;

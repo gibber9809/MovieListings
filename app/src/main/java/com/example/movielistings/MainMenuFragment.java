@@ -14,17 +14,16 @@ public class MainMenuFragment extends Fragment {
     private mainMenuListener mParentListener = null;
 
     public interface mainMenuListener {
-        void setFragmentEnterFromMenu();
-        void setFragmentStoreFromMenu();
-        void setFragmentLoadFromMenu();
-        void startActivityViewMovieList();
+        void startEnterTitleFragment();
+        void startStoreMoviesFragment();
+        void startLoadFileListFragment();
+        void startViewMovieListActivity();
         void exitApplication();
     }
 
     public MainMenuFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,7 +32,6 @@ public class MainMenuFragment extends Fragment {
         View fragmentView = inflater.inflate(R.layout.fragment_main_menu, container, false);
 
         //assign local listeners for all buttons in this fragment
-        //tweak this once I've got a bit more persistence running
         fragmentView.findViewById(R.id.enter_title_button).setOnClickListener(generateEnterTitleListener());
         fragmentView.findViewById(R.id.view_movies_button).setOnClickListener(generateViewMoviesListener());
         fragmentView.findViewById(R.id.store_button).setOnClickListener(generateStoreMoviesListener());
@@ -44,18 +42,19 @@ public class MainMenuFragment extends Fragment {
     }
 
 
-    //Here we store the parent context, and make sure it has implemented all of our listeners
+    /**
+     * Here we store the parent context, and make sure it has implemented all of our listeners
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
+
+        if (context instanceof mainMenuListener) {
             mParentListener = (mainMenuListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement mainMenuListener");
         }
     }
 
-    /*
+    /**
      * All of these methods generate onClickListeners that call methods in MainActivity on clicks
      * In this implementation the main activity will ignore these calls when they are invalid
      * e.g. trying to store a movie list when no movies have been addd to it
@@ -64,7 +63,7 @@ public class MainMenuFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mParentListener.setFragmentEnterFromMenu();
+                mParentListener.startEnterTitleFragment();
             }
         };
     }
@@ -73,7 +72,7 @@ public class MainMenuFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mParentListener.startActivityViewMovieList();
+                mParentListener.startViewMovieListActivity();
             }
         };
     }
@@ -82,7 +81,7 @@ public class MainMenuFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mParentListener.setFragmentStoreFromMenu();
+                mParentListener.startStoreMoviesFragment();
             }
         };
     }
@@ -91,7 +90,7 @@ public class MainMenuFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mParentListener.setFragmentLoadFromMenu();
+                mParentListener.startLoadFileListFragment();
             }
         };
     }

@@ -30,7 +30,7 @@ public class EnterTitleFragment extends Fragment {
 
 
     public interface enterTitleListener {
-        void setFragmentMenuFromEnter();
+        void stopEnterTitleFragment();
         void addMovieToList(String[] movieData);
     }
 
@@ -38,7 +38,6 @@ public class EnterTitleFragment extends Fragment {
         // Required empty public constructor
     }
 
-    //Add some boilerplate setup to oncreate
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +48,6 @@ public class EnterTitleFragment extends Fragment {
         }
     }
 
-    //Add setup for spinner and buttons
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -67,14 +65,15 @@ public class EnterTitleFragment extends Fragment {
         return fragmentView;
     }
 
-    //Make sure that parent context has implemented listener methods
+    /**
+     * Makes sure that parent context has implemented listener methods
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
+
+        if (context instanceof enterTitleListener) {
             mListener = (enterTitleListener) context;
-        } catch(ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement enterTitleListener Interface");
         }
         mParentContext = context;
     }
@@ -100,8 +99,10 @@ public class EnterTitleFragment extends Fragment {
         return mYearSpinner;
     }
 
-    //Adds a movie to a movie list, if all information has been entered correctly
-    //Resets all of the fields when this happens
+    /*
+     * Adds a movie to a movie list, if all information has been entered correctly
+     * Resets all of the fields when this happens
+     */
     private View.OnClickListener getAddOnClickListener() {
         return new View.OnClickListener() {
             @Override
@@ -111,6 +112,7 @@ public class EnterTitleFragment extends Fragment {
                 movieData[1] = getActorEdit().getText().toString();
                 movieData[2] = getYearSpinner().getSelectedItem().toString();
 
+                //Inelegant way of forcing user to fill in empty fields
                 if (movieData[0].length() == 0) {
                     getMovieEdit().requestFocus();
                 } else if (movieData[1].length() == 0) {
@@ -130,8 +132,7 @@ public class EnterTitleFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //do what must be done
-                mListener.setFragmentMenuFromEnter();
+                mListener.stopEnterTitleFragment();
             }
         };
     }

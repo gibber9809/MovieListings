@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 
-/*
+/**
  * Fragment that handles asking the user for the filename of where to store their movie list
  */
 public class StoreMoviesFragment extends Fragment {
@@ -20,7 +20,7 @@ public class StoreMoviesFragment extends Fragment {
 
 
     public interface StoreMoviesFragmentListener {
-        boolean returnAndSaveMovies(String filename);
+        boolean stopStoreMoviesFragmentAndSaveMovies(String filename);
     }
 
     public StoreMoviesFragment() {
@@ -40,11 +40,9 @@ public class StoreMoviesFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
+
+        if (context instanceof StoreMoviesFragmentListener) {
             mParentListener = (StoreMoviesFragmentListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " does not implement StoreMoviesFragmentListener interface");
         }
     }
 
@@ -55,15 +53,17 @@ public class StoreMoviesFragment extends Fragment {
         return mFileNameEdit;
     }
 
-    //If a filename has been typed, saves into that filename and returns to main menu, unless any
-    //exceptions are thrown in the writing process.
+    /**
+     * If a filename has been submitted, saves into that filename and returns to main menu, unless any
+     * exceptions are thrown in the writing process.
+     */
     public View.OnClickListener getSubmitListener() {
         return new View.OnClickListener() {
             public void onClick(View v) {
                 if (getFileNameEdit().getText().toString().length() == 0) {
                     getFileNameEdit().requestFocus();
                 } else {
-                    if (!mParentListener.returnAndSaveMovies(getFileNameEdit().getText().toString())) {
+                    if (!mParentListener.stopStoreMoviesFragmentAndSaveMovies(getFileNameEdit().getText().toString())) {
                         getFileNameEdit().requestFocus();
                     }
                 }
